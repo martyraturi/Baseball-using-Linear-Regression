@@ -1,0 +1,114 @@
+# MoneyBall ----  Baseball ----------
+#The A's calculated that they needed to score 135 more runs than they allowed
+#during the regular season to expect to win 95 games.
+#Let's see if we can verify this using linear regression in R.
+
+
+baseball <- read.csv(file.choose())
+#look at the structure of our data
+str(baseball)
+
+#we want to build models using data Paul DePodesta had
+#in 2002, so let's start by subsetting our data to only include the years before 2002.
+
+moneyball = subset(baseball, Year < 2002)
+str(moneyball)
+
+#So we want to build a linear regression equation to predict wins using the difference between runs
+#scored and runs allowed.To make this a little easier, let's start
+#by creating a new variable
+ 
+#We'll call it moneyball$RD, for run difference,
+#and set it equal to moneyball$RS, runs scored,
+#minus moneyball$RA, runs allowed.
+
+moneyball$RD = moneyball$RS - moneyball$RA
+str(moneyball) # now we have new variable of RD 
+
+
+#Now, before we build the linear regression equation,
+#let's visually check to see if there's a linear relationship between Run Difference and Wins.
+#We'll do that by creating a scatter plot with the plot function.
+
+
+plot(moneyball$RD , moneyball$W)
+#plot shows a very strong linear relationship between these two
+#variables, which is a good sign for our linear regression
+#W <- wins
+
+#we'll create our linear regression model, which we'll call WinsReg, and we'll
+WinsReg = lm (W ~ RD, data = moneyball)
+summary(WinsReg)
+#RD is very significant with three stars,and the R-squared of our model is 0.88.
+#So we have a strong model to predict wins using the difference between runs scored and runs allowed.
+
+
+
+
+#Now, let's see if we can use this model to confirm the claim made in Moneyball that a team needs
+#to score at least 135 more runs than they allow to win at least 95 games.
+#From coefficent table, Wins (W) = 80.8814 + 0.1058 (RD)
+# want W >= 95, This will be true if and only if our regression equation is greater than or equal to 95.
+# 80.8814 + 0.1058(RD) >= 95
+# RD >= 95-80.8814 /0.1058
+#RD > = 133.4
+#So this tells us that if the run difference of a team
+#is greater than or equal to 133.4,then we predict that the team will win at least 95 games.
+#This is very close to the claim made in Moneyball
+#that a team needs to score at least 135 more runs than they allow to win at least 95 games.
+########***************************########
+#Quick Question
+#If a baseball team scores 713 runs and allows 614 runs, how many games do we expect the team to win?
+#Using the linear regression model constructed during the lecture, enter the number of games we expect the team to win:
+# RD = 713 -614... RD = 99
+# 80.8814 +0.1058 *99 = 91.35  #Answer
+########***************************########
+
+#Predicting Runs
+#Let's start by creating a linear regression to verify which baseball statistics are
+#important for predicting runs scored.
+#We want to see if we can use linear regression to predict
+#runs scored, RS, using these three hitting statistics--on-base percentage, slugging percentage and batting average.
+
+RunsReg = lm(RS ~ OBP + SLG, data = moneyball)
+summary(RunsReg)
+
+#we can see that all of our independent variables are significant, and our R-squared is 0.93.
+#we can see that the coefficient for batting average is negative.
+#This implies that, all else being equal,a team with a lower batting average
+#will score more runs, which is a little counterintuitive.
+#This is a case of multicollinearity.
+########***************************########
+#Quick Question
+#If a baseball team's OBP is 0.311 and SLG is 0.405, how many runs do we expect the team to score?
+#Using the linear regression model constructed during the lecture (the one that uses OBP and SLG as independent variables), enter the number of runs we expect the team to score
+#Runs Scored = -804.63 + 2737.77*(OBP) + 1584.91*(SLG)
+#Here, OBP is 0.311 and SLG is 0.405, so our prediction is:
+#Runs Scored = -804.63 + 2737.77*0.311 + 1584.91*0.405 = 689 runs
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
